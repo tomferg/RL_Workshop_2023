@@ -1,0 +1,23 @@
+function [para] = paraGenerate(numParticipants)
+
+% Randomly Generate Model Parameters
+
+%Greedy Model
+para.egreedy(:,1) = betarnd(1.1, 1.1, [numParticipants,1]); % Learning Rate
+para.egreedy(:,2) = betarnd(1.1, 1.1, [numParticipants,1]); % Epsilon-
+
+% eGreedy Model - Stationary
+para.egreedy_stat(:,1) = betarnd(1.1, 1.1, [numParticipants,1]); % Epsilon
+
+% Chance Model
+para.chance(:,1) = betarnd(1.1, 1.1, [numParticipants,1]); % Bias
+
+
+
+% %Softmax Model
+% %Learning Rate - taken from Beta Distribution
+% parameters.softmax(1,:) = betarnd(alpha,beta,[numParticipants,1]);
+% %Temperature - taken from Gamma Distribution
+% parameters.softmax(2,:) = gamrnd(shape,scale,[numParticipants,1]);
+
+end

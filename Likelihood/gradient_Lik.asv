@@ -1,0 +1,65 @@
+function [llSum,parameters] = gradient_Lik(parameters,behaviouralData, initialValue, numTrials, numArms)
+
+% Set up LL Array
+ll = zeros(1, numTrials);
+
+%Assign values to parameters
+learningRate = parameters(1);
+    
+%Initialize Bandit Values
+
+% Extract Choices and Reward
+choiceObs = behaviouralData(1,:);
+rewardObs = behaviouralData(2,:);
+selectCount = ones(numArms);
+H = zeros(numArms, 1) + initialValue;
+
+% Start timer and reward
+time = 1;
+baseline = 0;
+
+% Loop Across Trials
+for trial = 1:numTrials
+   
+    %Deal with NaN's
+    if choiceObs(trial) == -1
+        
+        %Update Liklihood
+        ll(trial) = 1;
+        
+    else
+    
+        % Calculate Softmax
+        num = exp(H);
+        denom = sum(num);
+        sm = num / denom;
+            
+        % Extract the Choice the Model Made
+        partChoice = choiceObs(trial);
+        
+        % Determine if Choice is rewarded
+        reward = rewardObs(trial);
+    
+        baseline = baseline + (reward - baseline) / time;
+        
+        one_hot = zeros(numArms);
+        one_hot(partChoice) = 1;
+        
+        % Update Chosen H Values
+        H = H +  learningRate *  (reward - baseline) * (one_hot - sm);
+                        
+        % Update Times
+        time = time + 1;
+        
+        % Update Arm Count
+        selectCount(partChoice) = selectCount(partChoice) + 1;
+                   
+        % Compute Log liklihood
+        ll(trial) = sm(partChoice);
+
+    end
+    
+end
+
+%Sum Log likihood
+llSum = -sum(log(ll));

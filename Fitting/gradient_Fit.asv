@@ -1,0 +1,24 @@
+function [paramFit,LL,BIC,AIC] = gradient_Fit(arrayValues,initialValue, numTrials, numArms)
+
+options = optimoptions(@fmincon,'Algorithm','interior-point');
+
+
+
+
+PSoptions = optimoptions(@patternsearch,'Display','iter');
+[Xps,Fps] = patternsearch(Objfcn,X0,[],[],[],[],LB,UB,PSoptions)
+
+
+obFunc = @(parameters) gradient_Lik(parameters,arrayValues,initialValue, numTrials, numArms);
+
+X0 = .01 + (2-.01) .* rand();
+
+LowerBound = .01;
+UpperBound = 2;
+[paramFit, NegLL] = fmincon(obFunc, X0, [], [], [], [], LowerBound, UpperBound,[],options);
+
+LL = NegLL;
+BIC = length(X0) * log(length(arrayValues)) + 2*NegLL;
+AIC = 2*length(X0) - 2*NegLL;
+
+end
